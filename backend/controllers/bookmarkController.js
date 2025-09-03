@@ -120,7 +120,7 @@ const getBookmarkedContests = async (req, res) => {
         bookmarkedIds.has(contest.id)
       );
 
-      res.status(200).json({ bookmarkedContsts : bookmarkedContests });
+      res.status(200).json({ bookmarkedContests : bookmarkedContests });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
