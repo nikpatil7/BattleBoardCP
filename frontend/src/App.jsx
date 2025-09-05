@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// Import React and routing dependencies
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+// Import components
+
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+/**
+ * App Component
+ * Main component that handles routing and layout structure
+ */
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  
+      <Router>
+        {/* Main layout container with gradient background */}
+        <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+          {/* Navigation bar */}
+          <Navbar />
+
+          {/* Hero section */}
+          <section className="mb-3 text-center px-4 py-5">
+            <h1 className="text-4xl font-bold text-white mb-4">
+              BattleBoardCP
+            </h1>
+            <p className="text-xl text-gray-300">
+              Stay updated with the latest coding competitions
+            </p>
+          </section>
+
+          {/* Main content area with routes */}
+          
+
+          {/* Footer */}
+          <Footer />
+        </div>
+      </Router>
+  
+  );
 }
 
-export default App
+export default App;
