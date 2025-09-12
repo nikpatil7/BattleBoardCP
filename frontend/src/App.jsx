@@ -6,6 +6,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Login from "./components/Login";
+import Signup from "./components/SignUp";
+import ForgotPassword from "./components/ForgotPassword";
+
+// Import context providers
+import { NotificationProvider } from "./components/ToastNotification";
 
 /**
  * App Component
@@ -13,7 +19,7 @@ import Footer from "./components/Footer";
  */
 function App() {
   return (
-  
+    <NotificationProvider>
       <Router>
         {/* Main layout container with gradient background */}
         <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
@@ -31,12 +37,19 @@ function App() {
           </section>
 
           {/* Main content area with routes */}
-          
+          <main className="flex-grow container mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+            </Routes>
+          </main>
 
           {/* Footer */}
           <Footer />
         </div>
       </Router>
+    </NotificationProvider>  
   
   );
 }
