@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Import components
-
+import ContestList from "./components/ContestList";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
@@ -40,7 +40,7 @@ function App() {
           {/* Main content area with routes */}
           <main className="flex-grow container mx-auto px-4 py-8">
             <Routes>
-              <Route path="/" />
+              <Route path="/" element={<ContestList />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/profile" element={<UserProfile />} />
