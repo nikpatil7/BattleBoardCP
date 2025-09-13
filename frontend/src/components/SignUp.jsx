@@ -20,7 +20,7 @@ const SignupFlow = () => {
 
 
 // const BASE_URL = "http://localhost:3030";
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL
+const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 
   const validateEmail = (email) => {
@@ -178,7 +178,7 @@ const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={setsendLoading}
+              disabled={sendLoading}
               className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500"
             />
             <button

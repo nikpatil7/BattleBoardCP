@@ -6,8 +6,7 @@ import { useNotification } from "./ToastNotification"; // Import notification ho
 import { Eye, EyeOff } from "lucide-react";
 
 
-// const BASE_URL = "http://localhost:3030";
-const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL
+const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 export default function LoginForm() {
   const { addNotification } = useNotification();

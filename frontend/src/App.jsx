@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Signup from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
+import UserProfile from "./components/UserProfile";
 
 // Import context providers
 import { NotificationProvider } from "./components/ToastNotification";
@@ -39,8 +40,10 @@ function App() {
           {/* Main content area with routes */}
           <main className="flex-grow container mx-auto px-4 py-8">
             <Routes>
+              <Route path="/" />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/profile" element={<UserProfile />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
             </Routes>
           </main>
