@@ -8,7 +8,7 @@ import CodechefLogo from "../assets/codechef.png";
 import BookmarkIcon from "../assets/bookmark.svg";
 // Import components and utilities
 import { useNotification } from "./ToastNotification";
-
+import ContestNotesModal from "./ContestNotes";
 
 // API base URL
 
@@ -33,6 +33,20 @@ export default function ContestList() {
   const { addNotification } = useNotification();
   const navigate = useNavigate();
 
+  // Modal state management
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedContestId, setSelectedContestId] = useState(null);
+
+  // Modal handlers
+  const handleAddNote = (contestId) => {
+    setSelectedContestId(contestId);
+    setIsModalOpen(true);
+  };
+  // Modal Management
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedContestId(null);
+  };
 
   // Local Storage Management Functions
   const updateBookmarksInLocalStorage = (bookmarks) => {
@@ -569,7 +583,28 @@ export default function ContestList() {
                         </svg>
                         <span className="text-sm">Solutions</span>
                       </button>
-                      
+                      {token && (
+                        <button
+                          onClick={() => handleAddNote(contest.id)}
+                          className="px-4 py-2 rounded-lg flex items-center gap-2 bg-gray-800/50 backdrop-blur-md text-white transition-all duration-300 hover:bg-gray-700/50 hover:shadow-lg transform hover:scale-105
+                                     font-medium text-sm"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-yellow-500"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                          <span className="text-sm">Add Note</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -634,7 +669,28 @@ export default function ContestList() {
                     </svg>
                     <span className="text-sm">Solutions</span>
                   </button>
-                  
+                  {token && (
+                    <button
+                      onClick={() => handleAddNote(contest.id)}
+                      className="flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-1 bg-gray-800/50 backdrop-blur-md text-white transition-all duration-300
+                               font-medium text-sm"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 text-yellow-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                      <span className="text-sm">Add Note</span>
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -876,7 +932,13 @@ export default function ContestList() {
       )}
   
       {/* Contest Notes Modal */}
-      
+      {isModalOpen && (
+        <ContestNotesModal
+          contestId={selectedContestId}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 }
