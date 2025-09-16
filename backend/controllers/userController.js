@@ -154,8 +154,16 @@ const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    // Validate if email and newPassword are provided
-    if (!email || !newPassword) {
+    // Email should be available from the verifyTempToken middleware
+    const verifiedEmail = req.email;
+
+    // Validate if email matches the one from token
+    if (email !== verifiedEmail) {
+      return res.status(401).json({ message: "Email mismatch with token" });
+    }
+
+    // Validate if newPassword is provided
+    if (!newPassword) {
       return res.status(400).json({ message: "New password is required" });
     }
 
@@ -163,7 +171,7 @@ const resetPassword = async (req, res) => {
     const user = await userModels.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Reset the password for the found user

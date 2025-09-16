@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key"; // Store in env
+const JWT_SECRET = process.env.JWT_SECRET ; // Store in env
 
 /**
  * Middleware to verify temp JWT token

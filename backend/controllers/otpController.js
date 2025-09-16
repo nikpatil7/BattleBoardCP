@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const twilio = require("twilio");
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key_ganduJagya"; // Store in env
+const JWT_SECRET = process.env.JWT_SECRET; // Store in env
 
 /**
  * Generates a temporary JWT token valid for 10 minutes

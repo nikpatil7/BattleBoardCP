@@ -1,12 +1,14 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { href, Link } from "react-router-dom";
 import { logout } from "../redux/authslice";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { current } from "@reduxjs/toolkit";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
   { name: "About", href: "/about", current: false },
+  { name: "Contact", href: "/contact", current: false},
 ];
 
 export default function Navbar() {
