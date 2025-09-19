@@ -16,7 +16,7 @@ const verifyTempToken = require("../middleware/verifyTempToken.js");
 // Route for user registration
 // POST /api/users/register
 // Public access - allows new users to create an account
-router.post("/register", verifyTempToken, registerUser);
+router.post("/register",  registerUser);
 
 // Route for user authentication/login
 // POST /api/users/login
