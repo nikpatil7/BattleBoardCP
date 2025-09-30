@@ -79,11 +79,14 @@ app.use("/api/reminders", reminderRoutes);
  * Start the server
  * Listen on the specified port from environment variables
  */
-app.listen(port, () => {
+app.listen(port || 3000, () => {
   const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://battleboardcp.onrender.com" // Deployed URL
-    : `http://localhost:${port}`; // Local URL during development
+    ? process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://battleboardcp.vercel.app" // Vercel URL
+    : `http://localhost:${port || 3000}`; // Local URL during development
 
 console.log(`Server is running at ${baseUrl}`);
 });
+
+// Export for Vercel serverless functions
+module.exports = app;
