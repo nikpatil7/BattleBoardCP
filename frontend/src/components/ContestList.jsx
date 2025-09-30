@@ -9,6 +9,7 @@ import BookmarkIcon from "../assets/bookmark.svg";
 // Import components and utilities
 import { useNotification } from "./ToastNotification";
 import ContestNotesModal from "./ContestNotes";
+import ReminderModal from "./ReminderModal";
 
 // API base URL
 
@@ -36,12 +37,26 @@ export default function ContestList() {
   // Modal state management
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContestId, setSelectedContestId] = useState(null);
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+  const [selectedContest, setSelectedContest] = useState(null);
 
   // Modal handlers
   const handleAddNote = (contestId) => {
     setSelectedContestId(contestId);
     setIsModalOpen(true);
   };
+
+  // Reminder modal handlers
+  const handleOpenReminderModal = (contest) => {
+    setSelectedContest(contest);
+    setIsReminderModalOpen(true);
+  };
+
+  const handleCloseReminderModal = () => {
+    setIsReminderModalOpen(false);
+    setSelectedContest(null);
+  };
+
   // Modal Management
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -745,17 +760,22 @@ export default function ContestList() {
                     {token && (
                       <td className="p-4 flex justify-center items-center gap-4">
                         <button
-                          onClick={() =>
-                            toggleReminder(
-                              contest.id,
-                              contest.host
+                          onClick={() => {
+                            const contestWithPlatform = {
+                              ...contest,
+                              platform: contest.host
                                 .replace(".com", "")
-                                .replace(/^\w/, (c) => c.toUpperCase()),
-                              "email",
-                              60,
-                              contest.start
-                            )
-                          }
+                                .replace(/^\w/, (c) => c.toUpperCase())
+                            };
+                            
+                            if (isReminderSet(contest.id, contestWithPlatform.platform)) {
+                              // Remove reminder directly
+                              toggleReminder(contest.id, contestWithPlatform.platform, "email", 60, contest.start);
+                            } else {
+                              // Open modal for setting reminder
+                              handleOpenReminderModal(contestWithPlatform);
+                            }
+                          }}
                           className={`px-4 py-2 rounded-lg flex items-center gap-2 text-white transition-all duration-300
                                     hover:shadow-lg transform hover:scale-105 font-medium text-sm
                                     ${
@@ -848,17 +868,22 @@ export default function ContestList() {
                 {token && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     <button
-                      onClick={() =>
-                        toggleReminder(
-                          contest.id,
-                          contest.host
+                      onClick={() => {
+                        const contestWithPlatform = {
+                          ...contest,
+                          platform: contest.host
                             .replace(".com", "")
-                            .replace(/^\w/, (c) => c.toUpperCase()),
-                          "email",
-                          60,
-                          contest.start
-                        )
-                      }
+                            .replace(/^\w/, (c) => c.toUpperCase())
+                        };
+                        
+                        if (isReminderSet(contest.id, contestWithPlatform.platform)) {
+                          // Remove reminder directly
+                          toggleReminder(contest.id, contestWithPlatform.platform, "email", 60, contest.start);
+                        } else {
+                          // Open modal for setting reminder
+                          handleOpenReminderModal(contestWithPlatform);
+                        }
+                      }}
                       className={`flex-1 px-3 py-2 rounded-lg flex items-center justify-center gap-1 text-white transition-all duration-300
                                 font-medium text-sm
                                 ${
@@ -937,6 +962,17 @@ export default function ContestList() {
           contestId={selectedContestId}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+        />
+      )}
+
+      {/* Reminder Modal */}
+      {isReminderModalOpen && selectedContest && (
+        <ReminderModal
+          isOpen={isReminderModalOpen}
+          onClose={handleCloseReminderModal}
+          onSetReminder={toggleReminder}
+          contest={selectedContest}
+          user={user}
         />
       )}
     </div>

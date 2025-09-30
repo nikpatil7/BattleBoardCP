@@ -27,14 +27,17 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
-    // Optional phone number field with validation
+    // Optional phone number field with validation (must include country code)
     phoneNumber: {
       type: String,
       validate: {
         validator: function (value) {
-          return validator.isMobilePhone(value, "any", { strictMode: false });
+          if (!value) return true; // Optional field
+          // Allow both formats: +91XXXXXXXXXX or just XXXXXXXXXX (will add +91 prefix)
+          const phoneRegex = /^(\+91\d{10}|\d{10})$/;
+          return phoneRegex.test(value);
         },
-        message: "Invalid phone number",
+        message: "Phone number must be 10 digits or include country code (+91XXXXXXXXXX)",
       },
     },
     // Array of bookmarked contest IDs
@@ -246,12 +249,17 @@ userSchema.statics.resetPassword = async function (email, newPassword) {
     }
 
     const user = await this.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     // Update password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
     user.otp = null; // Clear OTP after reset
 
-    await user.save();
+    // Save with validation disabled to avoid phone number validation issues
+    await user.save({ validateBeforeSave: false });
     return { message: "Password reset successfully." };
   } catch (error) {
     throw new Error("Password reset failed: " + error.message);

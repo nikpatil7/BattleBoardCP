@@ -78,7 +78,7 @@ const ForgotPassword = () => {
       }
 
       const data = await response.json();
-      localStorage.setItem("tempToken", data.emailVerificationToken);
+      localStorage.setItem("tempToken", data.verificationToken);
       setStep("reset");
       addNotification("OTP Verified Successfully!", "success");
     } catch (err) {

@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const nodemailer = require("nodemailer");
 const cron = require("node-cron");
-const sendSMSReminder = require("./smsSender");
+const { sendSMSReminder, validatePhoneNumber, formatPhoneNumber } = require("./smsSender");
 
 
 /**
@@ -45,7 +45,7 @@ const sendEmailReminder = async (email, contestId, platform, contestTime) => {
   ✅ **Pro Tip:** Double-check your internet connection and login credentials before the contest starts.
   
   Best of luck! 🍀
-  Team PacemakerX
+  Team BattleBoardCP
   `,
   };
 
@@ -101,21 +101,46 @@ const processReminders = async () => {
 
           // Send email reminder if method is email and user has email
           if (method === "email" && user.email) {
-            await sendEmailReminder(
-              user.email,
-              contestId,
-              platform,
-              contestTimeIST
-            );
+            try {
+              await sendEmailReminder(
+                user.email,
+                contestId,
+                platform,
+                contestTimeIST
+              );
+              console.log(`📧 Email reminder sent to ${user.email}`);
+            } catch (error) {
+              console.error(`❌ Failed to send email to ${user.email}:`, error.message);
+            }
           }
-          // SMS reminder functionality (placeholder for future implementation)
+          // SMS reminder functionality
           else if (method === "sms" && user.phoneNumber) {
-            await sendSMSReminder(
-              user.phoneNumber,
-              contestId,
-              platform,
-              contestTimeIST
-            );
+            try {
+              // Validate phone number format
+              if (!validatePhoneNumber(user.phoneNumber)) {
+                console.error(`❌ Invalid phone number format for ${user.username}: ${user.phoneNumber}`);
+                continue;
+              }
+
+              const result = await sendSMSReminder(
+                user.phoneNumber,
+                contestId,
+                platform,
+                contestTimeIST
+              );
+
+              if (result.success) {
+                console.log(`📱 SMS reminder sent to ${user.phoneNumber} (${user.username})`);
+              } else {
+                console.error(`❌ Failed to send SMS to ${user.phoneNumber}: ${result.error}`);
+              }
+            } catch (error) {
+              console.error(`❌ SMS service error for ${user.username}:`, error.message);
+            }
+          }
+          // Handle case where method is set but contact info is missing
+          else {
+            console.warn(`⚠️ ${user.username} has ${method} reminder set but missing contact info`);
           }
         }
       }

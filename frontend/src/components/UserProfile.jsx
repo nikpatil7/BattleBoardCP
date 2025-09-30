@@ -56,7 +56,14 @@ const Profile = () => {
           {/* Phone Number Row */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
             <span className="text-gray-400 text-lg md:text-xl">📞 Phone:</span>
-            <span className="font-medium text-xl md:text-2xl">{`+91 ${user?.phoneNumber}`}</span>
+            <span className="font-medium text-xl md:text-2xl">
+              {user?.phoneNumber 
+                ? (user.phoneNumber.startsWith('+') 
+                    ? user.phoneNumber 
+                    : `+91 ${user.phoneNumber}`)
+                : 'Not provided'
+              }
+            </span>
           </div>
         </div>
       </div>
