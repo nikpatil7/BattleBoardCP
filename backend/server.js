@@ -18,7 +18,16 @@ require("dotenv").config();
 
 // Environment variables
 const port = process.env.PORT;
-const CORS_ORIGIN = process.env.CORS_ORIGIN;
+
+// Auto-detect CORS origin based on environment
+const getCorsOrigin = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.CORS_ORIGIN || 'https://battleboardcp.vercel.app'; //frontend on Vercel
+  }
+  return 'http://localhost:5173'; // Development default
+};
+
+const CORS_ORIGIN = getCorsOrigin();
 
 
 // Database configuration
@@ -51,7 +60,13 @@ connectToDatabase();
 // Middleware setup
 app.use(
   cors({
-    origin: [CORS_ORIGIN,"http://localhost:5173","https://battleboardcp.vercel.app"], // Add frontend domain
+    origin: [
+      CORS_ORIGIN,
+      'http://localhost:5173', // Local development
+      'http://localhost:3000',
+      'http://localhost:3030', // Alternative dev port
+      'https://battleboardcp.vercel.app' // Your frontend on Vercel
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Enable credentials if using cookies or auth tokens
@@ -80,14 +95,12 @@ app.use("/api/reminders", reminderRoutes);
  * Listen on the specified port from environment variables
  */
 app.listen(port || 3030, () => {
-  console.log(`Server running on port ${port || 3030}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(` Server running on port ${port || 3030}`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(` CORS Origin: ${CORS_ORIGIN}`);
+  console.log(` Backend URL: ${process.env.NODE_ENV === 'production' ? 'https://battleboardcp.onrender.com' : `http://localhost:${port || 3030}`}`);
+  console.log(` Frontend URL: ${process.env.NODE_ENV === 'production' ? 'https://battleboardcp.vercel.app' : 'http://localhost:5173'}`);
 });
-// app.listen(port || 3000, () => {
-//   const baseUrl = process.env.NODE_ENV === "production"
-//     ? `https://${process.env.VERCEL_URL || 'battleboardcp.vercel.app'}`
-//     : `http://localhost:${port || 3000}`;
-// });
 
 // Export for Vercel serverless functions
 module.exports = app;
