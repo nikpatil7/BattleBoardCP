@@ -62,49 +62,28 @@ const limiter = rateLimit({
 // Initialize database connection
 connectToDatabase();
 
-// CORS debugging middleware
-app.use((req, res, next) => {
-  console.log(` Request from origin: ${req.headers.origin}`);
-  console.log(` Request method: ${req.method}`);
-  console.log(` Request URL: ${req.url}`);
-  next();
-});
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,
+  "https://battleboardcp.vercel.app",
+  "http://localhost:3030", // for local testing
+];
 
-// Manual CORS middleware - more reliable than cors package
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    CORS_ORIGIN, // From environment auto-detection
-    process.env.CORS_ORIGIN, // Direct from env
-    process.env.FRONTEND_URL, // Alternative env var
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:3030'
-  ].filter(Boolean); // Remove undefined values
-  
-  const origin = req.headers.origin;
-  
-  // Use environment-detected CORS origin for production
-  if (process.env.NODE_ENV === 'production') {
-    res.header('Access-Control-Allow-Origin', CORS_ORIGIN);
-  } else if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle preflight OPTIONS request
-  if (req.method === 'OPTIONS') {
-    console.log('🔄 Handling OPTIONS preflight request');
-    return res.sendStatus(200);
-  }
-  
-  console.log(`✅ CORS headers set for origin: ${origin}, using CORS_ORIGIN: ${CORS_ORIGIN}`);
-  next();
-});
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // needed if you are using cookies or sessions
+     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+    exposedHeaders: ['*', 'Authorization']
+  })
+);
+
 
 // app.use(cors()); // allow everybody to use backend
 
@@ -137,10 +116,10 @@ app.get("/api/cors-test", (req, res) => {
  * Listen on the specified port from environment variables
  */
 app.listen(port || 3030, () => {
-  console.log(` Server running on port ${port || 3030}`);
+  console.log(` Server running on port ${port}`);
   console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(` CORS Origin: ${CORS_ORIGIN}`);
-  console.log(` Backend URL: ${process.env.NODE_ENV === 'production' ? 'https://battleboardcp.onrender.com' : `http://localhost:${port || 3030}`}`);
+  console.log(` Backend URL: ${process.env.NODE_ENV === 'production' ? 'https://battleboardcp.onrender.com' : `http://localhost:${port}`}`);
   console.log(` Frontend URL: ${process.env.NODE_ENV === 'production' ? 'https://battleboardcp.vercel.app' : 'http://localhost:5173'}`);
 });
 

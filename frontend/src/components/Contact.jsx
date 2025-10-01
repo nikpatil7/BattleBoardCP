@@ -66,6 +66,7 @@ const ContactComponent = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+        credentials: 'include', // Include cookies in the request
       });
 
       const result = await response.json();
