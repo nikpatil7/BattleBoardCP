@@ -29,6 +29,11 @@ const getCorsOrigin = () => {
 
 const CORS_ORIGIN = getCorsOrigin();
 
+// Log CORS configuration for debugging
+console.log(` NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(` CORS_ORIGIN: ${CORS_ORIGIN}`);
+console.log(` Environment CORS_ORIGIN: ${process.env.CORS_ORIGIN}`);
+
 
 // Database configuration
 const connectToDatabase = require("./db");
@@ -57,21 +62,49 @@ const limiter = rateLimit({
 // Initialize database connection
 connectToDatabase();
 
-// Middleware setup
-app.use(
-  cors({
-    origin: [
-      CORS_ORIGIN,
-      'http://localhost:5173', // Local development
-      'http://localhost:3000',
-      'http://localhost:3030', // Alternative dev port
-      'https://battleboardcp.vercel.app' // Your frontend on Vercel
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Enable credentials if using cookies or auth tokens
-  })
-);
+// CORS debugging middleware
+app.use((req, res, next) => {
+  console.log(` Request from origin: ${req.headers.origin}`);
+  console.log(` Request method: ${req.method}`);
+  console.log(` Request URL: ${req.url}`);
+  next();
+});
+
+// Manual CORS middleware - more reliable than cors package
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    CORS_ORIGIN, // From environment auto-detection
+    process.env.CORS_ORIGIN, // Direct from env
+    process.env.FRONTEND_URL, // Alternative env var
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:3030'
+  ].filter(Boolean); // Remove undefined values
+  
+  const origin = req.headers.origin;
+  
+  // Use environment-detected CORS origin for production
+  if (process.env.NODE_ENV === 'production') {
+    res.header('Access-Control-Allow-Origin', CORS_ORIGIN);
+  } else if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    console.log('🔄 Handling OPTIONS preflight request');
+    return res.sendStatus(200);
+  }
+  
+  console.log(`✅ CORS headers set for origin: ${origin}, using CORS_ORIGIN: ${CORS_ORIGIN}`);
+  next();
+});
 
 // app.use(cors()); // allow everybody to use backend
 
@@ -89,6 +122,15 @@ app.use("/api/users", userRoutes);
 app.use("/api/contests", contestRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/reminders", reminderRoutes);
+
+// CORS test endpoint
+app.get("/api/cors-test", (req, res) => {
+  res.json({ 
+    message: "CORS is working!", 
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
+});
 
 /**
  * Start the server
