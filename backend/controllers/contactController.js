@@ -48,7 +48,7 @@ class ContactController {
         from: email,
         to: process.env.RECIPIENT_EMAIL || "jazzzzk7@gmail.com",
         subject: `New Contact Form Submission from ${name}`,
-        html: ContactController.constructEmailTemplate(name, email, message), // ✅ Use class name here
+        html: ContactController.constructEmailTemplate(name, email, message), //  Use class name here
       };
 
       // Send email

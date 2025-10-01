@@ -51,7 +51,7 @@ connectToDatabase();
 // Middleware setup
 app.use(
   cors({
-    origin: [CORS_ORIGIN,"http://localhost:5173","https://battleboardcp.onrender.com"], // Add frontend domain
+    origin: [CORS_ORIGIN,"http://localhost:5173","https://battleboardcp.vercel.app"], // Add frontend domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Enable credentials if using cookies or auth tokens
@@ -79,14 +79,15 @@ app.use("/api/reminders", reminderRoutes);
  * Start the server
  * Listen on the specified port from environment variables
  */
-app.listen(port || 3000, () => {
-  const baseUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://battleboardcp.vercel.app" // Vercel URL
-    : `http://localhost:${port || 3000}`; // Local URL during development
-
-console.log(`Server is running at ${baseUrl}`);
+app.listen(port || 3030, () => {
+  console.log(`Server running on port ${port || 3030}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+// app.listen(port || 3000, () => {
+//   const baseUrl = process.env.NODE_ENV === "production"
+//     ? `https://${process.env.VERCEL_URL || 'battleboardcp.vercel.app'}`
+//     : `http://localhost:${port || 3000}`;
+// });
 
 // Export for Vercel serverless functions
 module.exports = app;
