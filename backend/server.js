@@ -24,7 +24,7 @@ const getCorsOrigin = () => {
   if (process.env.NODE_ENV === 'production') {
     return process.env.CORS_ORIGIN || 'https://battleboardcp.vercel.app'; //frontend on Vercel
   }
-  return 'http://localhost:5173'; // Development default
+  return process.env.CORS_ORIGIN || 'http://localhost:5173'; // Development default
 };
 
 const CORS_ORIGIN = getCorsOrigin();
@@ -65,8 +65,10 @@ connectToDatabase();
 const allowedOrigins = [
   process.env.CORS_ORIGIN,
   "https://battleboardcp.vercel.app",
-  "http://localhost:3030", // for local testing
-];
+  "http://localhost:5173", // for local testing
+  "http://localhost:3000",
+  "http://localhost:3030",    
+].filter(Boolean); // Remove any undefined/null values
 
 app.use(
   cors({
